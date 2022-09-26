@@ -120,7 +120,7 @@ const WinningTable = ( {card1, card2, card3, card4, card5, betValue, balance, se
             payout: 15
         },
         {
-            message: 'FOUR OR THE SAME! You win 30x bet',
+            message: 'FOUR OF THE SAME! You win 30x bet',
             payout: 30
         },
         {
