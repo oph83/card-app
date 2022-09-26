@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import deckService from "../services/deck"
+import WinningTable from "./WinningTable";
 
 const RawPoker = () => {
     const [card1, setCard1] = useState([])
@@ -20,6 +21,11 @@ const RawPoker = () => {
     const [lock4, setLock4] = useState(true)
     const [lock5, setLock5] = useState(true)
     const [result, setResult] = useState(false)
+    const [draw, setDraw] = useState(0)
+    const [betValue, setBetValue] = useState(1)
+    const [balance, setBalance] = useState(100)
+    const [betLocked, setBetLocked] = useState(true)
+    
     
     useEffect(() => {
         deckService.getCardBack()
@@ -31,6 +37,13 @@ const RawPoker = () => {
           setDeck(deck)
           ) 
       }, [])
+    
+    const MAX = balance
+    const getBackgroundSize = () => {
+        return {
+            backgroundSize: `${(betValue * 100) / MAX}% 100%`,
+        };
+    };
 
     const randomCard1 = () => {
         const len = deck.length;
@@ -109,6 +122,8 @@ const RawPoker = () => {
             setLock5(true)
         }
         setResult(true)
+        setDraw((draw + 1))
+        setBalance(balance - betValue)
     }
 
     const reset = () => {
@@ -127,6 +142,7 @@ const RawPoker = () => {
         setSee4(true)
         setSee5(true)
         setResult(false)
+        setBetLocked(true)
     }
 
     const image = {
@@ -138,18 +154,31 @@ const RawPoker = () => {
     if(!deck) return <div>loading...</div>
     else return (
         <div>
+            <p>Balance: {balance} €</p>
+            <p>You have played {draw} hands</p>
             {result ? 
-            <>
+            <>  <WinningTable card1={card1} card2={card2} card3={card3} card4={card4} card5={card5}
+                 betValue={betValue} setBetValue={setBetValue} balance={balance} setBalance={setBalance} reset={reset} MAX={MAX} />
+
                 <img src={card1.iconUrl} style={image} alt="card" />
                 <img src={card2.iconUrl} style={image} alt="card" />
                 <img src={card3.iconUrl} style={image} alt="card" />
                 <img src={card4.iconUrl} style={image} alt="card" />
                 <img src={card5.iconUrl} style={image} alt="card" />
-                <br/>
-                <p>Congratulations! You win nothing!</p>
-                <button onClick={reset}>Reset</button>
+                
             </>
-            : <>
+            : <>{betLocked ? <>
+            
+                <button onClick={()=>setBetLocked(false)}>Lock</button>   
+                <p>
+                Bet : {betValue} <input type="range" min="0" max={MAX} onChange={(e) => setBetValue(e.target.value)} style={getBackgroundSize()} value={betValue}/> 
+                </p> 
+                <p>Place a bet.</p>
+             </> : <>
+                <button onClick={deal}>Deal</button>    
+                <br/>  
+                <p>Open cards by pressing them and hide them pressing again. Change cards that is hidden by pressing deal.</p>
+
                 { see1 ? <img src={back[0].iconUrl} style={image} alt="card" onClick={randomCard1} /> 
                 : lock1 ? <img src={card1.iconUrl} style={image} alt="card" onClick={()=>setLock1(false)} />
                 : <img src={back[0].iconUrl} style={image} alt="card" onClick={()=>setLock1(true)}/> }
@@ -169,9 +198,9 @@ const RawPoker = () => {
                 { see5 ? <img src={back[0].iconUrl} style={image} alt="card" onClick={randomCard5} /> 
                 : lock5 ? <img src={card5.iconUrl} style={image} alt="card" onClick={()=>setLock5(false)} />
                 : <img src={back[0].iconUrl} style={image} alt="card" onClick={()=>setLock5(true)}/> }
-                <br/>
-                <button onClick={deal}>Deal</button>
-                <p>Reveal cards by pressing them and press again to hide them. Press deal to change cards you have hidden.</p>
+
+            </>
+            }
             </>
             }
         </div>

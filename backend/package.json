@@ -7,10 +7,10 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:ui": "rm -rf build && cd C:/koodi/project-deck/deck-app && npm run build && cp -r build c:/koodi/project-deck/deck-app-backend",
-    "deploy": "fly deploy",
+    "build:ui": "rm -rf build && cd C:/koodi/project-deck/frontend && npm run build && cp -r build c:/koodi/project-deck/backend",
+    "deploy": "flyctl deploy",
     "deploy:full": "npm run build:ui && npm run deploy",    
-    "logs:prod": "fly logs"
+    "logs:prod": "flyctl logs"
   },
   "author": "Olli-Pekka Hannukainen",
   "license": "ISC",
